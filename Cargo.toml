@@ -1,0 +1,9 @@
+[package]
+name = "chaos"
+version = "0.1.0"
+authors = ["Dzmitry Malyshau <kvarkus@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+terminal_graphics = "0.1"
+termion = "1"
