@@ -19,16 +19,17 @@ trait Chaos {
 }
 
 struct Mandelbrot {
-    start_x: f32,
-    len_x: f32,
-    start_y: f32,
-    len_y: f32,
+    start_x: f64,
+    len_x: f64,
+    start_y: f64,
+    len_y: f64,
     num_iter: usize,
-    step: f32,
+    step: f64,
+    variants: &'static [Colour],
 }
 
 impl Mandelbrot {
-    fn zoom(&mut self, amount: f32) {
+    fn zoom(&mut self, amount: f64) {
         let old = (self.len_x, self.len_y);
         self.len_x *= amount;
         self.len_y *= amount;
@@ -39,11 +40,11 @@ impl Mandelbrot {
 
 impl Chaos for Mandelbrot {
     fn compute(&self, raw_x: f32, raw_y: f32) -> Colour {
-        let cx = self.start_x + raw_x * self.len_x;
-        let cy = self.start_y + raw_y * self.len_y;
+        let cx = self.start_x + raw_x as f64 * self.len_x;
+        let cy = self.start_y + raw_y as f64 * self.len_y;
         let mut iter = 0;
         let (mut x, mut y) = (cx, cy);
-        while x * x + y * y < 2.0 {
+        while iter == 0 || x * x + y * y < 2.0 {
             iter += 1;
             if iter == self.num_iter {
                 return Colour::Black;
@@ -52,8 +53,7 @@ impl Chaos for Mandelbrot {
             y = 2.0 * x * y + cy;
             x = x * x - y2 + cx;
         }
-        let variants = Colour::variants();
-        variants[1 + iter * (variants.len() - 1) / self.num_iter]
+        self.variants[(iter * self.variants.len()) / self.num_iter]
     }
 
     fn on_key(&mut self, ch: char) {
@@ -77,7 +77,7 @@ fn main() {
         let x_center = -0.5;
         let standard_width = 3.0;
         let ratio = width as f32 / height as f32 / 3.0;
-        let len_x = standard_width * ratio;
+        let len_x = (standard_width * ratio) as f64;
         Mandelbrot {
             start_x: x_center - 0.5 * len_x,
             len_x,
@@ -85,6 +85,21 @@ fn main() {
             len_y: 2.0,
             num_iter: 50,
             step: 0.1,
+            variants: &[
+                Colour::White,
+                Colour::BrightMagenta,
+                Colour::Magenta,
+                Colour::Blue,
+                Colour::BrightBlue,
+                Colour::BrightCyan,
+                Colour::Cyan,
+                Colour::Green,
+                Colour::BrightGreen,
+                Colour::BrightYellow,
+                Colour::Yellow,
+                Colour::Red,
+                Colour::BrightRed,
+            ],
         }
     };
 
